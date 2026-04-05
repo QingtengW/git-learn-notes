@@ -1,0 +1,141 @@
+Git学习笔记
+
+一、Git是干什么的
+//Git是一个版本管理工具
+核心作用：
+1.记录项目的历史版本
+2.记录每一次改动
+3.可以回到以前的版本
+4.可以查看改了什么
+5.可以管理多条开发线
+
+
+二、配置用户名和邮箱
+//Git需要知道这次提交是谁做的
+查看是否已配置
+git config --global user.name
+git config --global user.email
+设置用户名和邮箱
+git config --global user.name "your name"
+git config --global user.email "your email"
+查看全局配置
+git config --global --list
+
+
+三、创建Git仓库
+在当前目录下初始化一个Git仓库
+git init
+.git是Git仓库的隐藏目录，里面保存了历史版本和Git管理所需的数据
+有.git的目录，通常可以认为是一个Git仓库
+
+
+四、查看当前仓库状态
+git status
+常见输出解释
+1.On branch main
+当前在 main 分支上
+2.No commits yet
+这个仓库还没有任何提交记录
+3.nothing to commit, working tree clean
+当前文件状态和最近一次提交一致，没有新的改动
+4.Untracked files:
+Git 看到了这些文件，但还没有正式跟踪它们
+5.Changes to be committed:
+文件被修改了，但这些修改还没有进入暂存区
+
+
+五、Git的三个区域
+1工作区
+当前真实看到和修改的文件
+2暂存区
+执行 git add 后，准备提交的内容放在这里
+3提交历史
+执行 git commit 后，真正保存下来的版本历史
+
+
+六、把文件的当前状态加入暂存区
+e.g. git add a.txt
+它不是最终保存，只是表示下次提交时，我想把这个版本的文件提交进去
+注：文件以后再次修改后，如果想把新的修改也提交进去，通常还要再执行一次git add
+
+
+七、把暂存区里的内容正式保存为一次提交记录
+e.g. git commit -m "第一次提交"
+git commit：创建提交
+-m：直接写提交说明
+"第一次提交"：提交说明
+常见输出解释
+1. [main (root-commit) 62b5733] 第一次提交
+main：当前分支
+(root-commit)：这是仓库的第一次提交
+62b5733：这次提交的短编号
+第一次提交：提交说明
+2. 1 file changed, 0 insertions(+), 0 deletions(-)
+表示这次提交影响了 1 个文件，增加/删除了多少行
+3. create mode 100644 a.txt
+表示 Git 在这次提交中正式记录了这个新文件
+
+
+八、查看提交历史
+git log
+常见输出解释
+commit 62b573343bbe82c8403f9e8a42abc80d6f13ca03 (HEAD -> main)
+Author: QingtengW <2072522871@qq.com>
+Date:   Sat Apr 4 16:09:23 2026 +0800
+
+    第一次提交
+
+commit ...：提交的完整编号
+HEAD -> main：当前所在位置就是 main 的最新提交
+Author：提交作者
+Date：提交时间
+提交说明：本次提交写了什么
+
+更简洁的历史查看
+git log --oneline
+
+当执行 git log 时，Git 可能会进入分页查看界面，底部显示(END)，表示已经看到最后一页
+退出方法：q
+
+
+九、查看修改了什么
+git diff
+git diff 最重要的三条规则
+1、- 开头：旧内容
+2、+ 开头：新内容
+3、没有符号：上下文，表示这一行没变
+例：
+@@ -1,2 +1,3 @@
+ 好好学习，天天向上
+-华风夏韵，洛水天依
++华风夏韵，洛水天依
++永远喜欢洛天依
+意思是：
+第一行没变
+原来某处是一行
+现在变成了两行
+本质上是增加了 永远喜欢洛天依
+
+十、版本回退
+1.临时查看旧版本
+git checkout 提交号
+特点：文件内容会变成那个提交对应的样子,不是正式让 main 永久回退,会进入 detached HEAD 状态
+2.真正把当前分支退回旧版本
+git reset --hard 提交号
+特点：当前文件直接变成旧版本样子，分支也会回到旧位置，当前未提交改动会被清掉
+3.追加一次提交来撤销旧提交
+git revert 提交号
+
+十一、detached HEAD 是什么
+HEAD是当前所在的位置
+执行 git checkout 某个提交号 时，不是切到分支，而是直接切到某个具体提交
+1.detached HEAD 下提交会怎样？
+会长出新的提交
+但这些提交不一定挂在某个正式分支上
+容易形成“游离的一条线”
+2.detached HEAD 的风险？
+暂时能看到
+但没有分支名指着它们
+以后切回别的分支后，更容易找不到这条线
+3.如何回到正常状态？
+git checkout main
