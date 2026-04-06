@@ -1,7 +1,7 @@
 Git学习笔记（进阶篇）
 
 /*
-远程仓库篇1
+远程仓库篇（HTTP/HTTPS协议）
 **/
 本地仓库：自己电脑里的 Git 仓库
 远程仓库：网上的 Git 仓库
@@ -118,16 +118,17 @@ Could not connect to server
 常见排查方向：
 1) 检查浏览器能不能打开 GitHub
 2) 检查代理是否有问题
-执行：
+
+代理问题的处理方法（重要）：
+打开Git CMD，添加全局代理
+git config --global http.proxy http://127.0.0.1:7897
+git config --global https.proxy http://127.0.0.1:7897
+验证代理设置
 git config --global --get http.proxy
 git config --global --get https.proxy
-
-如果有输出，先取消掉：
+取消代理
 git config --global --unset http.proxy
 git config --global --unset https.proxy
-
-然后重新推送：
-git push -u origin main
 
 2.4 总结：
 git remote add origin 远程仓库地址
@@ -138,3 +139,150 @@ git push
 
 
 三、克隆线上仓库到本地
+适用场景：
+GitHub 上已经有一个仓库
+本地还没有这个项目
+想把远程仓库下载到自己电脑
+想换一台电脑继续开发
+想下载别人的公开项目学习
+
+3.1 clone 是什么意思
+命令：
+git clone 远程仓库地址
+
+作用：
+把远程仓库下载到本地
+自动生成一个项目文件夹
+自动把远程仓库和本地仓库连接起来
+自动把远程仓库默认命名为 origin
+
+所以 clone 比 download zip 强很多，
+因为它下载的不只是文件，还有 Git 历史记录。
+
+3.2 和直接下载 ZIP 的区别
+下载 ZIP
+只是把当前文件下载下来
+通常没有 Git 历史
+不能直接继续 Git 版本管理流程
+
+git clone
+下载的是一个完整 Git 仓库
+包括：
+项目文件
+提交历史
+分支信息
+远程仓库连接信息
+
+3.3 基本流程
+第一步：找到远程仓库地址
+去 GitHub 仓库页面，点击：
+Code
+会看到仓库地址，通常有两种：
+HTTPS 方式
+https://github.com/用户名/仓库名.git
+SSH 方式
+git@github.com:用户名/仓库名.git
+例如：
+https://github.com/QingtengW/git-learn-notes.git
+
+第二步：进入你想保存项目的目录
+例如你想把仓库下载到 E盘/test 目录下：
+cd /e/test
+注意：
+这里进入的是“父目录”，不是仓库目录本身。
+因为 clone 会自动帮你创建一个新文件夹。
+
+第三步：执行 clone
+git clone https://github.com/QingtengW/git-learn-notes.git
+执行后，Git 会自动：
+创建一个文件夹 git-learn-notes
+把远程仓库内容下载进去
+在里面自动生成 .git
+自动把远程仓库记成 origin
+
+第四步：进入克隆下来的仓库
+cd git-learn-notes
+然后看状态：
+git status
+通常会看到类似：
+On branch main
+Your branch is up to date with 'origin/main'.
+nothing to commit, working tree clean
+说明：
+当前在 main 分支
+本地已经和远程 origin/main 连接好了
+当前没有未提交改动
+
+3.4 常见问题 
+q1 clone 后自动帮用户做了什么？
+Git 自动帮用户做了这些事：
+1) 新建本地项目目录
+2) 下载远程仓库内容
+3) 下载提交历史
+4) 初始化本地 Git 仓库
+5) 自动添加远程仓库 origin
+6) 默认检出主分支（通常是 main）
+所以，clone 下来的项目本身就是 Git 仓库，不需要再 git init。
+
+q2 clone 自己的仓库 与 clone 别人的仓库 的区别？
+clone 自己的仓库可以：
+下载到本地、修改、提交、再 push 回去
+clone 别人的公开仓库可以：
+下载、学习、本地修改
+
+q3 如果想换个本地文件夹名字怎么办？
+默认情况下：
+git clone 仓库地址
+会创建和仓库同名的文件夹。
+
+如果想自己指定本地目录名，可以写：
+git clone 仓库地址 你想要的本地文件夹名
+
+例如：
+git clone https://github.com/QingtengW/git-learn-notes.git my-notes
+这样本地创建的文件夹就不是 git-learn-notes，而是 my-notes。
+
+q4 如何把 clone 下来的别人的仓库 push 到自己的仓库
+适用场景：
+1. 先 clone 了别人的仓库
+2. 现在想把这份代码上传到自己的 GitHub 仓库
+
+方法一：添加自己的远程仓库（推荐）
+1）先 clone 别人的仓库
+git clone 别人的仓库地址
+2）进入项目目录
+cd 仓库名
+3）查看当前远程仓库
+git remote -v
+默认一般是：
+origin  别人的仓库地址 (fetch)
+origin  别人的仓库地址 (push)
+4）在 GitHub 上新建自己的空仓库
+5）把自己的仓库添加为新的远程仓库
+git remote add myrepo 自己的仓库地址
+例如：
+git remote add myrepo https://github.com/你的用户名/你的仓库.git
+6）查看远程仓库
+git remote -v
+这时一般会同时看到：
+origin：别人的仓库
+myrepo：自己的仓库
+7）把本地代码推送到自己的仓库
+git push -u myrepo main
+说明：
+以后如果还想往自己的仓库推送，可以继续用：
+git push myrepo main
+
+方法二：直接把 origin 改成自己的仓库
+git remote set-url origin 自己的仓库地址
+例如：
+git remote set-url origin https://github.com/你的用户名/你的仓库.git
+然后推送：
+git push -u origin main
+注意：
+这种方法改完后，本地就不再直接记住原来的别人仓库地址了
+补充：
+更规范的命名方式常常是：
+origin：自己的仓库
+upstream：原作者仓库
+
