@@ -1,0 +1,140 @@
+Git学习笔记（进阶篇）
+
+/*
+远程仓库篇1
+**/
+本地仓库：自己电脑里的 Git 仓库
+远程仓库：网上的 Git 仓库
+
+远程仓库的作用：
+1. 备份代码
+2. 多设备同步
+3. 团队协作
+4. 展示项目
+
+一、创建线上仓库
+1.1 登录 GitHub 账号
+https://github.com
+
+1.2 在页面右上角点击 + ，选择 New repository（新建仓库）
+
+1.3 填写仓库信息
+Repository name（仓库名）
+名称通常只能包含字母、数字、连字符（-）等，尽量不要写空格
+
+Description（描述，可选）
+
+Visibility（可见性）
+Public：公开
+Private：私有
+
+1.4 点击 Create repository（创建仓库）
+
+注意：
+如果你本地已经有 Git 仓库和提交记录了，
+创建远程仓库时，最好不要勾选：
+1) Initialize this repository with a README
+2) Add .gitignore
+3) Choose a license
+
+原因：
+避免本地和远程初始历史不一致，减少后续冲突
+
+
+二、从本地上传现有项目
+适用场景：
+本地已经有项目
+本地已经 git init 过
+本地已经有提交记录
+现在想上传到 GitHub
+
+2.1 链接本地仓库与远程仓库
+git remote add origin 远程仓库地址
+
+解释：
+1) remote
+表示远程仓库
+2) origin
+这是远程仓库的默认名字
+可以理解成：
+我给这个远程仓库起了个名字，叫 origin
+例如：
+git remote add origin https://github.com/QingtengW/git-learn-notes.git
+
+补充：
+1) 修改远程仓库名字
+git remote rename 旧名字 新名字
+2) 修改远程仓库地址
+git remote set-url 远程仓库名 新的远程仓库地址
+
+
+2.2 检查是否连接成功
+git remote -v
+
+如果成功，你会看到类似：
+
+origin  https://github.com/QingtengW/git-learn-notes.git (fetch)
+origin  https://github.com/QingtengW/git-learn-notes.git (push)
+
+含义：
+fetch：拉取用的地址
+push：推送用的地址
+
+2.3 把本地内容第一次推送到远程仓库
+git push -u origin main
+
+解释：
+push：把本地提交推到远程
+origin：远程仓库名字
+main：推到远程的 main 分支
+-u：建立“上游跟踪关系”
+
+//可能会弹出来让用户登录GitHub账号的对话框
+1) 选 Browser/Device
+推荐新手优先使用
+一般会跳转浏览器，登录 GitHub 并授权
+2) 选 Token 
+需要提前生成 Personal Access Token
+步骤相对更麻烦，新手一般不优先使用
+
+常见报错：
+1) 浏览器认证提示
+info: please complete authentication in your browser...
+含义：
+需要去浏览器完成 GitHub 登录和授权
+
+2) 网络连接失败
+例如：
+fatal: unable to access 'https://github.com/QingtengW/git-learn-notes.git/':
+Recv failure: Connection was reset
+或者：
+Failed to connect to github.com port 443
+Could not connect to server
+
+含义：
+本地电脑当前没有成功连接到 GitHub
+这通常是网络问题，不一定是 Git 命令写错了
+
+常见排查方向：
+1) 检查浏览器能不能打开 GitHub
+2) 检查代理是否有问题
+执行：
+git config --global --get http.proxy
+git config --global --get https.proxy
+
+如果有输出，先取消掉：
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+然后重新推送：
+git push -u origin main
+
+2.4 总结：
+git remote add origin 远程仓库地址
+git remote -v
+git push -u origin main
+第一次推送成功后，后面最常用：
+git push
+
+
+三、克隆线上仓库到本地
